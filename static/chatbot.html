@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Medical Chatbot</title>
+  <style>
+    body { font-family: Arial; margin: 40px; background: #f6f8fa; }
+    h2 { color: #333; }
+    #chat-box { border: 1px solid #ccc; background: white; padding: 15px; height: 300px; overflow-y: auto; margin-bottom: 15px; }
+    .message { margin: 10px 0; }
+    .user { font-weight: bold; }
+    .ai { color: #0072c6; }
+  </style>
+</head>
+<body>
+  <h2>🩺 AI Medical Assistant</h2>
+  <label>Patient ID:</label>
+  <input id="patientId" type="number" value="1" />
+  <div id="chat-box"></div>
+
+  <input id="userInput" type="text" placeholder="Type your message..." style="width: 70%;" />
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    async function sendMessage() {
+      const patientId = document.getElementById('patientId').value;
+      const userInput = document.getElementById('userInput');
+      const message = userInput.value;
+      if (!message) return;
+
+      const chatBox = document.getElementById('chat-box');
+      chatBox.innerHTML += `<div class="message user">👤 You: ${message}</div>`;
+      userInput.value = "";
+
+      const response = await fetch("/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ patient_id: Number(patientId), message })
+      });
+
+      const result = await response.json();
+      chatBox.innerHTML += `<div class="message ai">🤖 AI: ${result.reply || result.detail}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
+
+
